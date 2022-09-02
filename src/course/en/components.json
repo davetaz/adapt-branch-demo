@@ -1,0 +1,354 @@
+[
+  {
+    "_component": "mcq",
+    "_classes": "",
+    "_isOptional": false,
+    "_isAvailable": true,
+    "_isHidden": false,
+    "_isVisible": true,
+    "_isResetOnRevisit": "false",
+    "_ariaLevel": 0,
+    "_disableAccessibilityState": false,
+    "title": "Your choice: Make an intervention",
+    "displayTitle": "Your choice: Make an intervention",
+    "body": "<p>You chose to make an intervention. Which of the following reasons played a factor in your decision?</p>",
+    "_id": "6312274326d618009680117c",
+    "_parentId": "6312274326d6180096801178",
+    "_type": "component",
+    "_layout": "full",
+    "_onScreen": {
+      "_isEnabled": false,
+      "_classes": "",
+      "_percentInviewVertical": 50
+    },
+    "_tutor": {
+      "_type": "notify",
+      "_classes": "",
+      "_hasNotifyBottomButton": false,
+      "_button": {
+        "text": "{{_globals._extensions._tutor.hideFeedback}}",
+        "ariaLabel": "{{_globals._extensions._tutor.hideFeedback}}"
+      }
+    },
+    "_pageLevelProgress": {
+      "_isEnabled": true,
+      "_isCompletionIndicatorEnabled": false
+    },
+    "instruction": "Tick all that apply",
+    "_items": [
+      {
+        "text": "The person in the car took the risk by choosing to be in a self driving car.",
+        "_shouldBeSelected": true,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      },
+      {
+        "text": "This is what I would do if I was in control of the car.",
+        "_shouldBeSelected": true,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      },
+      {
+        "text": "If the only way to stop the car is by crashing into the barrier then there is potential for it to kill more people further down the road unless intervention is taken.",
+        "_shouldBeSelected": true,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      },
+      {
+        "text": "I’m hoping that the passenger sees what is happening and can prepare for the crash, jump out the car or be saved by an airbag.",
+        "_shouldBeSelected": true,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      },
+      {
+        "text": "None of the above",
+        "_shouldBeSelected": true,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      }
+    ],
+    "_attempts": 1,
+    "_canShowModelAnswer": false,
+    "_canShowFeedback": true,
+    "_canShowMarking": false,
+    "_shouldDisplayAttempts": false,
+    "_isRandom": false,
+    "_recordInteraction": true,
+    "_hasItemScoring": false,
+    "_questionWeight": 1,
+    "_selectable": 4,
+    "_feedback": {
+      "title": "Feedback",
+      "correct": "<p>Thanks for your feedback. Below you can see how you compare to others who also chose to intervene.</p>",
+      "_incorrect": {
+        "final": "<p>Thanks for your feedback. Below you can see how you compare to others who also chose to intervene.</p>",
+        "notFinal": "<p>Thanks for your feedback. Below you can see how you compare to others who also chose to intervene.</p>"
+      },
+      "_partlyCorrect": {
+        "final": "<p>Thanks for your feedback. Below you can see how you compare to others who also chose to intervene.</p>",
+        "notFinal": "<p>Thanks for your feedback. Below you can see how you compare to others who also chose to intervene.</p>"
+      }
+    },
+    "_buttons": {
+      "_submit": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_reset": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_showCorrectAnswer": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_hideCorrectAnswer": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_showFeedback": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "remainingAttemptsText": "",
+      "remainingAttemptText": ""
+    }
+  },
+  {
+    "_component": "mcq",
+    "_classes": "",
+    "_isOptional": false,
+    "_isAvailable": true,
+    "_isHidden": false,
+    "_isVisible": true,
+    "_isResetOnRevisit": "false",
+    "_ariaLevel": 0,
+    "_disableAccessibilityState": false,
+    "title": "Your choice: Avoid intervention",
+    "displayTitle": "Your choice: Avoid intervention",
+    "body": "<p>You chose to not&nbsp;intervene. Which of the following reasons played a factor in your decision?</p>",
+    "_id": "6312274326d618009680117d",
+    "_parentId": "6312274326d6180096801179",
+    "_type": "component",
+    "_layout": "full",
+    "_onScreen": {
+      "_isEnabled": false,
+      "_classes": "",
+      "_percentInviewVertical": 50
+    },
+    "_pageLevelProgress": {
+      "_isEnabled": true,
+      "_isCompletionIndicatorEnabled": false
+    },
+    "_tutor": {
+      "_type": "notify",
+      "_classes": "",
+      "_hasNotifyBottomButton": false,
+      "_button": {
+        "text": "{{_globals._extensions._tutor.hideFeedback}}",
+        "ariaLabel": "{{_globals._extensions._tutor.hideFeedback}}"
+      }
+    },
+    "instruction": "Tick all that apply",
+    "_items": [
+      {
+        "text": "The passenger should be the primary concern of the car.",
+        "_shouldBeSelected": true,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      },
+      {
+        "text": "This is what I would do if I was in control of the car.",
+        "_shouldBeSelected": true,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      },
+      {
+        "text": "The pedestrian is taking a risk by choosing the road without there being a sensible distance between them and the approaching car.",
+        "_shouldBeSelected": true,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      },
+      {
+        "text": "I’m hoping that the pedestrian is able to get out of the way of the car.",
+        "_shouldBeSelected": true,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      },
+      {
+        "text": "None of the above",
+        "_shouldBeSelected": true,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      }
+    ],
+    "_attempts": 1,
+    "_canShowModelAnswer": false,
+    "_canShowFeedback": true,
+    "_canShowMarking": false,
+    "_shouldDisplayAttempts": false,
+    "_isRandom": false,
+    "_recordInteraction": true,
+    "_hasItemScoring": false,
+    "_questionWeight": 1,
+    "_selectable": 4,
+    "_feedback": {
+      "title": "Feedback",
+      "correct": "<p>Thanks for your feedback. Below you can see how you compare to others who also chose to intervene.</p>",
+      "_incorrect": {
+        "final": "<p>Thanks for your feedback. Below you can see how you compare to others who also chose to intervene.</p>",
+        "notFinal": "<p>Thanks for your feedback. Below you can see how you compare to others who also chose to intervene.</p>"
+      },
+      "_partlyCorrect": {
+        "final": "<p>Thanks for your feedback. Below you can see how you compare to others who also chose to intervene.</p>",
+        "notFinal": "<p>Thanks for your feedback. Below you can see how you compare to others who also chose to intervene.</p>"
+      }
+    },
+    "_buttons": {
+      "_submit": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_reset": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_showCorrectAnswer": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_hideCorrectAnswer": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_showFeedback": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "remainingAttemptsText": "",
+      "remainingAttemptText": ""
+    }
+  },
+  {
+    "_component": "gmcq",
+    "_classes": "",
+    "_isOptional": false,
+    "_isAvailable": true,
+    "_isHidden": false,
+    "_isVisible": true,
+    "_isResetOnRevisit": "false",
+    "_ariaLevel": 0,
+    "_disableAccessibilityState": false,
+    "title": "Branch test",
+    "displayTitle": "Branch test",
+    "body": "",
+    "_id": "6312274326d618009680117e",
+    "_parentId": "6312274326d6180096801177",
+    "_type": "component",
+    "_layout": "full",
+    "_onScreen": {
+      "_isEnabled": false,
+      "_classes": "",
+      "_percentInviewVertical": 50
+    },
+    "_pageLevelProgress": {
+      "_isEnabled": true,
+      "_isCompletionIndicatorEnabled": false
+    },
+    "_tutor": {
+      "_type": "notify",
+      "_classes": "",
+      "_hasNotifyBottomButton": false,
+      "_button": {
+        "text": "{{_globals._extensions._tutor.hideFeedback}}",
+        "ariaLabel": "{{_globals._extensions._tutor.hideFeedback}}"
+      }
+    },
+    "instruction": "",
+    "_items": [
+      {
+        "_graphic": {
+          "large": "course/en/assets/1e6aeed772a622f7a04ff1b3e3e0ae1b8155800c.png",
+          "small": "",
+          "alt": "",
+          "attribution": "<a href=\"unknown\" target=\"_blank\">unknown</a> <span class='assetLicence'>[unknown]</span>"
+        },
+        "text": "",
+        "_shouldBeSelected": false,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      },
+      {
+        "_graphic": {
+          "large": "course/en/assets/9f5925e9a41a7a269a13f26860c1ea5595e3bc8d.png",
+          "small": "",
+          "alt": "",
+          "attribution": "<a href=\"unknown\" target=\"_blank\">unknown</a> <span class='assetLicence'>[unknown]</span>"
+        },
+        "text": "",
+        "_shouldBeSelected": true,
+        "_isPartlyCorrect": false,
+        "feedback": "",
+        "_score": 0
+      }
+    ],
+    "_attempts": 1,
+    "_canShowModelAnswer": true,
+    "_canShowFeedback": false,
+    "_canShowMarking": true,
+    "_shouldDisplayAttempts": false,
+    "_isRandom": false,
+    "_hasItemScoring": false,
+    "_questionWeight": 1,
+    "_recordInteraction": true,
+    "_columns": 0,
+    "_selectable": 1,
+    "_feedback": {
+      "title": "",
+      "correct": "",
+      "_incorrect": {
+        "final": "",
+        "notFinal": ""
+      },
+      "_partlyCorrect": {
+        "final": "",
+        "notFinal": ""
+      }
+    },
+    "_buttons": {
+      "_submit": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_reset": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_showCorrectAnswer": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_hideCorrectAnswer": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "_showFeedback": {
+        "buttonText": "",
+        "ariaLabel": ""
+      },
+      "remainingAttemptsText": "",
+      "remainingAttemptText": ""
+    }
+  }
+]
