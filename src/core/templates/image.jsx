@@ -24,10 +24,14 @@ export default function Image(props) {
   if (!hasSource) return null;
   const attributionClassNamePrefixes = (props.attributionClassNamePrefixes || props.classNamePrefixes);
   return (
-    <div className={classes([
-      prefixClasses(props.classNamePrefixes, ['__image-container']),
-      props.attribution && 'has-attribution'
-    ])}>
+    <span
+      id={props.id}
+      className={classes([
+        prefixClasses(props.classNamePrefixes, ['__image-container']),
+        props.classes,
+        props.attribution && 'has-attribution'
+      ])}
+    >
 
       <img
         className={prefixClasses(props.classNamePrefixes, ['__image'])}
@@ -35,16 +39,17 @@ export default function Image(props) {
         aria-label={a11y.normalize(props.alt)}
         aria-hidden={!props.alt}
         loading='eager'
+        aria-describedby={props.longdescription ? props.longDescriptionId : undefined}
       />
 
       {props.attribution &&
-      <div className={prefixClasses(attributionClassNamePrefixes, ['__attribution'])}>
-        <div className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])}>
+      <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution'])}>
+        <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])}>
           {html(props.attribution)}
-        </div>
-      </div>
+        </span>
+      </span>
       }
 
-    </div>
+    </span>
   );
 }

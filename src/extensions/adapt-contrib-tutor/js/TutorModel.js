@@ -1,3 +1,4 @@
+import Adapt from 'core/js/adapt';
 import TUTOR_TYPE from './TUTOR_TYPE';
 
 export default class TutorModel extends Backbone.Model {
@@ -10,14 +11,17 @@ export default class TutorModel extends Backbone.Model {
       _button: {
         text: '{{_globals._extensions._tutor.hideFeedback}}',
         ariaLabel: '{{_globals._extensions._tutor.hideFeedback}}'
-      }
+      },
+      ...Adapt.course.get('_tutor')
     };
   }
 
   initialize(data, parentModel) {
-    data = $.extend(true, this.defaults(), {
-      ...data,
+    data = $.extend(true, this.defaults(), data?._isInherited === true ? null : data, {
       _attributes: { 'data-adapt-id': parentModel.get('_id') },
+      _id: parentModel.get('_id'),
+      _shouldRenderId: false,
+      altTitle: parentModel.get('altFeedbackTitle'),
       title: parentModel.get('feedbackTitle'),
       body: parentModel.get('feedbackMessage')
     });

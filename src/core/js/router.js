@@ -18,6 +18,7 @@ class Router extends Backbone.Router {
   }
 
   initialize({ model }) {
+    this.navigateToElement = this.navigateToElement.bind(this);
     this._isBackward = false;
     this.model = model;
     this._navigationRoot = null;
@@ -337,35 +338,45 @@ class Router extends Backbone.Router {
   /**
    * Allows a selector or id to be passed in and Adapt will navigate to this element. Resolves
    * asynchronously when the element has been navigated to.
-   * @param {string} selector CSS selector or id of the Adapt element you want to navigate to e.g. `".co-05"` or `"co-05"`
+   * @param {JQuery|string} selector CSS selector or id of the Adapt element you want to navigate to e.g. `".co-05"` or `"co-05"`
    * @param {Object} [settings] The settings for the `$.scrollTo` function (See https://github.com/flesler/jquery.scrollTo#settings).
    * @param {Object} [settings.replace=false] Set to `true` if you want to update the URL without creating an entry in the browser's history.
    */
   async navigateToElement(selector, settings = {}) {
-    const currentModelId = selector.replace(/\./g, '').split(' ')[0];
-    const currentModel = data.findById(currentModelId);
+    const currentModelId = typeof selector === 'string' && selector.replace(/\./g, '').split(' ')[0];
+    const isSelectorAnId = data.hasId(currentModelId);
 
-    if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady'))) {
-      const shouldReplace = settings.replace || false;
+    if (isSelectorAnId) {
+      const currentModel = data.findById(currentModelId);
       const contentObject = currentModel.isTypeGroup?.('contentobject') ? currentModel : currentModel.findAncestor('contentobject');
       const contentObjectId = contentObject.get('_id');
       const isNotInCurrentContentObject = (contentObjectId !== location._currentId);
-      if (isNotInCurrentContentObject) {
-        this.isScrolling = true;
-        this.navigate(`#/id/${currentModelId}`, { trigger: true, replace: shouldReplace });
-        this.model.set('_shouldNavigateFocus', false, { pluginName: 'adapt' });
-        await new Promise(resolve => Adapt.once('contentObjectView:ready', _.debounce(() => {
-          this.model.set('_shouldNavigateFocus', true, { pluginName: 'adapt' });
-          resolve();
-        }, 1)));
-        this.isScrolling = false;
+
+      if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady') || isNotInCurrentContentObject)) {
+        const shouldReplace = settings.replace || false;
+        if (isNotInCurrentContentObject) {
+          this.isScrolling = true;
+          this.navigate(`#/id/${currentModelId}`, { trigger: true, replace: shouldReplace });
+          this.model.set('_shouldNavigateFocus', false, { pluginName: 'adapt' });
+          await new Promise(resolve => Adapt.once('contentObjectView:ready', _.debounce(() => {
+            this.model.set('_shouldNavigateFocus', true, { pluginName: 'adapt' });
+            resolve();
+          }, 1)));
+          this.isScrolling = false;
+        }
+        await Adapt.parentView.renderTo(currentModelId);
       }
-      await Adapt.parentView.renderTo(currentModelId);
+
+      // Correct selector when passed a pure id
+      if (currentModel && selector === currentModel.get('_id')) {
+        selector = `.${selector}`;
+      }
     }
 
-    // Correct selector when passed a pure id
-    if (currentModel && selector === currentModel.get('_id')) {
-      selector = `.${selector}`;
+    const isElementUnavailable = !$(selector).length;
+    if (isElementUnavailable) {
+      logging.warn(`router.navigateToElement, selector not found in document: ${selector}`);
+      return;
     }
 
     // Get the current location - this is set in the router
@@ -427,22 +438,4 @@ class Router extends Backbone.Router {
 const router = new Router({
   model: new RouterModel(null, { reset: true })
 });
-
-router.navigateToElement = router.navigateToElement.bind(router);
-
-Object.defineProperties(Adapt, {
-  navigateToElement: {
-    get() {
-      logging.deprecated('Adapt.navigateToElement, please use router.navigateToElement');
-      return router.navigateToElement;
-    }
-  },
-  router: {
-    get() {
-      logging.deprecated('Adapt.router, please use core/js/router directly');
-      return router;
-    }
-  }
-});
-
 export default router;

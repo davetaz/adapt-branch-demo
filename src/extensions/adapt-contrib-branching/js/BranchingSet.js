@@ -26,7 +26,7 @@ export default class BranchingSet {
     // Hide all branching container original children as only clones will be displayed
     children.forEach(child => {
       const config = child.get('_branching');
-      if (!config || !config._isEnabled) return;
+      if (!config) return;
       config._containerId = config._containerId || containerId;
       // Make direct children unavailable
       const isDirectChild = (child.getParent().get('_id') === containerId);
@@ -121,15 +121,15 @@ export default class BranchingSet {
 
   getNextModel({ isTheoretical = false } = {}) {
     const config = this.model.get('_branching');
-    const brachingModels = this.models;
+    const branchingModels = this.models;
     const branchedModels = this.branchedModels;
 
     const isBeforeStart = !branchedModels.length;
     if (isBeforeStart) {
       const hasStartId = Boolean(config._start);
       const firstModel = hasStartId ?
-        brachingModels.find(model => model.get('_id') === config._start) :
-        brachingModels[0];
+        branchingModels.find(model => model.get('_id') === config._start) :
+        branchingModels[0];
       return firstModel;
     }
 
@@ -140,7 +140,7 @@ export default class BranchingSet {
     }
 
     const lastChildConfig = lastChildModel.get('_branching');
-    if (!lastChildConfig || !lastChildConfig._isEnabled) return true;
+    if (!lastChildConfig) return true;
 
     // Branch from the last model's correctness, if configured
     const correctness = getCorrectness(lastChildModel);
@@ -150,7 +150,7 @@ export default class BranchingSet {
     function findNextModel(nextId) {
       const isRelativeId = nextId.includes('@');
       if (!isRelativeId) {
-        return brachingModels.find(model => model.get('_id') === nextId);
+        return branchingModels.find(model => model.get('_id') === nextId);
       }
       const originalLastChildModel = data.findById(lastChildModel.get('_branchOriginalModelId'));
       const nextModel = originalLastChildModel.findRelativeModel(nextId);
@@ -167,7 +167,7 @@ export default class BranchingSet {
       const nextBranchingSet = Adapt.branching.getSubsetByModelId(nextId);
       if (!nextBranchingSet) {
         logging.error(`Cannot branch to a model that isn't contained in a branching set: ${nextId} from ${lastChildModel.get('_id')}`);
-        return;
+        return true;
       }
       if (!isTheoretical) nextBranchingSet.startId = nextId;
       // Mark as finished
@@ -254,7 +254,7 @@ export default class BranchingSet {
     return data.filter(model => {
       if (model.get('_isBranchClone')) return false;
       const config = model.get('_branching');
-      if (!config || config._isEnabled === false) return false;
+      if (!config) return false;
       return (config._containerId === containerId);
     });
   }
@@ -264,7 +264,7 @@ export default class BranchingSet {
     return data.filter(model => {
       if (!model.get('_isBranchClone')) return false;
       const config = model.get('_branching');
-      if (!config || config._isEnabled === false) return false;
+      if (!config) return false;
       return (config._containerId === containerId);
     });
   }

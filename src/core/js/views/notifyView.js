@@ -26,6 +26,10 @@ export default class NotifyView extends Backbone.View {
     return this._stack;
   }
 
+  get isOpen() {
+    return (this.stack.length > 0);
+  }
+
   _deprecated(type, notifyObject) {
     logging.deprecated(`NOTIFY DEPRECATED: Adapt.trigger('notify:${type}', notifyObject); is no longer supported, please use notify.${type}(notifyObject);`);
     return this.create(notifyObject, { _type: type });
@@ -40,6 +44,7 @@ export default class NotifyView extends Backbone.View {
   create(notifyObject, defaults) {
     notifyObject = _.defaults({}, notifyObject, defaults, {
       _type: 'popup',
+      _shouldRenderId: false,
       _isCancellable: true,
       _showCloseButton: true,
       _closeOnShadowClick: true

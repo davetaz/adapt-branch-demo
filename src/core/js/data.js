@@ -8,6 +8,7 @@ import ConfigModel from 'core/js/models/configModel';
 import LockingModel from 'core/js/models/lockingModel';
 import logging from 'core/js/logging';
 import location from 'core/js/location';
+import _ from 'underscore';
 
 class Data extends AdaptCollection {
 
@@ -21,6 +22,9 @@ class Data extends AdaptCollection {
 
   initialize() {
     super.initialize();
+    this.findById = this.findById.bind(this);
+    this.findViewByModelId = this.findViewByModelId.bind(this);
+    this.findByTrackingPosition = this.findByTrackingPosition.bind(this);
     this.on({
       add: this.onAdded,
       remove: this.onRemoved
@@ -45,7 +49,7 @@ class Data extends AdaptCollection {
   }
 
   loadConfigData() {
-    Adapt.config = new ConfigModel(null, { url: 'course/config.' + Adapt.build.get('jsonext'), reset: true });
+    Adapt.config = new ConfigModel(null, { url: Adapt.build.get('coursedir') + '/config.' + Adapt.build.get('jsonext'), reset: true });
     this.listenToOnce(Adapt, 'configModel:loadCourseData', this.onLoadCourseData);
     this.listenTo(Adapt.config, {
       'change:_activeLanguage': this.onLanguageChange,
@@ -73,7 +77,8 @@ class Data extends AdaptCollection {
     this.loadCourseData();
   }
 
-  onLanguageChange(model, language) {
+  async onLanguageChange(model, language) {
+    await wait.queue();
     offlineStorage.set('lang', language);
     // set `_isStarted` back to `false` when changing language so that the learner's answers
     // to questions get restored in the new language when `_restoreStateOnLanguageChange: true`
@@ -89,7 +94,7 @@ class Data extends AdaptCollection {
     // All code that needs to run before adapt starts should go here
     const language = Adapt.config.get('_activeLanguage');
 
-    const courseFolder = 'course/' + language + '/';
+    const courseFolder = Adapt.build.get('coursedir') + '/' + language + '/';
 
     $('html').attr('lang', language);
 
@@ -106,7 +111,9 @@ class Data extends AdaptCollection {
         // Add path to data in case it's necessary later
         data.__path__ = path;
         resolve(data);
-      }).fail(reject);
+      }).fail(() => {
+        reject(new Error(`Unable to load ${path}`));
+      });
     });
   }
 
@@ -119,14 +126,24 @@ class Data extends AdaptCollection {
       manifest = await this.getJSON(manifestPath);
     } catch (err) {
       manifest = ['course.json', 'contentObjects.json', 'articles.json', 'blocks.json', 'components.json'];
-      logging.warnOnce(`Manifest path '${manifestPath} not found. Using traditional files: ${manifest.join(', ')}`);
+      logging.error(`Manifest path '${manifestPath} not found. Using traditional files: ${manifest.join(', ')}`);
     }
-    const allFileData = await Promise.all(manifest.map(filePath => {
-      return this.getJSON(`${languagePath}${filePath}`);
-    }));
+    let allFileData;
+    try {
+      allFileData = await Promise.all(manifest.map(filePath => {
+        return this.getJSON(`${languagePath}${filePath}`);
+      }));
+    } catch (error) {
+      logging.error(error);
+      return;
+    }
     // Flatten all file data into a single array of model data
     const allModelData = allFileData.reduce((result, fileData) => {
       if (Array.isArray(fileData)) {
+        fileData.forEach((datum, index) => {
+          datum.__path__ = fileData.__path__;
+          datum.__index__ = index;
+      });
         result.push(...fileData);
       } else if (fileData instanceof Object) {
         result.push(fileData);
@@ -148,8 +165,16 @@ class Data extends AdaptCollection {
       if (modelData._type === 'course') {
         return;
       }
+      try {
+        components.getModelName(modelData);
+      } catch (error) {
+        logging.error(`Failed to load object ${modelData.__path__}${Object.prototype.hasOwnProperty.call(modelData, '__index__') ? `[${modelData.__index__}]` : ''}`)
+        logging.error(error);
+        return;
+      }
       this.push(modelData);
     });
+    this.checkData();
     this.trigger('reset');
     this.trigger('loaded');
     await wait.queue();
@@ -191,6 +216,15 @@ class Data extends AdaptCollection {
     return new Promise(resolve => {
       this.once('ready', resolve);
     });
+  }
+
+  /**
+   * Checks if a model _id exists
+   * @param {string} id The id of the item e.g. "co-05"
+   * @returns {boolean}
+   */
+  hasId(id) {
+    return Boolean(this._byAdaptID[id]);
   }
 
   /**
@@ -254,7 +288,8 @@ class Data extends AdaptCollection {
     }
     if (indexInTrackingIdDescendants >= 0) {
       // Model is either the trackingId model or a descendant
-      const trackingIdDescendants = [trackingIdModel].concat(trackingIdModel.getAllDescendantModels(true));
+      let trackingIdDescendants = [trackingIdModel].concat(trackingIdModel.getAllDescendantModels(true));
+      trackingIdDescendants = trackingIdDescendants.filter(model => !(model.isTypeGroup('component') && model.get('_isTrackable') === false));
       return trackingIdDescendants[indexInTrackingIdDescendants];
     }
     // Model is an ancestor of the trackingId model
@@ -263,39 +298,94 @@ class Data extends AdaptCollection {
     return trackingIdAncestors[ancestorDistance];
   }
 
+  logReadyError(view) {
+    const notReadyDescendants = view.model.getAllDescendantModels(true).filter(model => !model.get('_isReady'));
+    logging.error(`View ${notReadyDescendants.map(model => `${model.get('_id')} (${model.get('_component') ?? model.get('_type')})`).join(', ')} failed to become ready, forcing ready status.`);
+    notReadyDescendants.reverse().forEach(model => model.set('_isReady', true));
+  }
+
+  checkData() {
+    this.checkIds();
+    this.checkTrackingIds();
+  }
+
+  checkIds() {
+    const items = this.toJSON();
+    // Index and group
+    const idIndex = _.indexBy(items, '_id');
+    const idGroups = _.groupBy(items, '_id');
+    const parentIdGroups = _.groupBy(items, '_parentId');
+    // Setup error collection arrays
+    let orphanedIds = {};
+    let emptyIds = {};
+    let duplicateIds = {};
+    let missingIds = {};
+    items.forEach((o) => {
+      const isCourseType = (o._type === 'course');
+      const isComponentType = (o._type === 'component');
+      if (idGroups[o._id].length > 1) {
+        duplicateIds[o._id] = true; // Id has more than one item
+      }
+      if (!isComponentType && !parentIdGroups[o._id]) {
+        emptyIds[o._id] = true; // Course has no children
+      }
+      if (!isCourseType && (!o._parentId || !idIndex[o._parentId])) {
+        orphanedIds[o._id] = true; // Item has no defined parent id or the parent id doesn't exist
+      }
+      if (!isCourseType && o._parentId && !idIndex[o._parentId]) {
+        missingIds[o._parentId] = true; // Referenced parent item does not exist
+      }
+    });
+    orphanedIds = Object.keys(orphanedIds);
+    emptyIds = Object.keys(emptyIds);
+    duplicateIds = Object.keys(duplicateIds);
+    missingIds = Object.keys(missingIds);
+    // Output for each type of error
+    const hasErrored = orphanedIds.length || emptyIds.length || duplicateIds.length || missingIds.length;
+    if (orphanedIds.length) {
+      logging.error(`Orphaned _ids: ${orphanedIds.join(', ')}`);
+    }
+    if (missingIds.length) {
+      logging.error(`Missing _ids: ${missingIds.join(', ')}`);
+    }
+    if (emptyIds.length) {
+      logging.error(`Empty _ids: ${emptyIds.join(', ')}`);
+    }
+    if (duplicateIds.length) {
+      logging.error(`Duplicate _ids: ${duplicateIds.join(', ')}`);
+    }
+    // If any error has occured, stop processing.
+    if (hasErrored) {
+      const err = new Error('Oops, looks like you have some json errors.');
+      err.number = 10011;
+      throw err;
+    }
+  }
+
+  checkTrackingIds() {
+    const items = this.toJSON();
+    const trackingIdType = Adapt.build.get('trackingIdType') || 'block';
+    const trackingIdCounts = _.groupBy(items.filter(item => item._type === trackingIdType), '_trackingId');
+    const missingTrackingIds = items.filter(item => item._type === trackingIdType && item._trackingId === undefined).map(item => item._id);
+    if (missingTrackingIds.length) {
+      logging.error(`Missing _trackingIds: ${missingTrackingIds.join(', ')}`);
+    }
+    const duplicateTrackingIds = Object.entries(trackingIdCounts)
+      .filter(([id, group]) => group.length > 1)
+      .map(([id, group]) => `${id}:[${group.map(item => item._id).join(', ')}]`);
+    if (duplicateTrackingIds.length) {
+      logging.error(`Duplicate _trackingIds: ${duplicateTrackingIds.join(', ')}`);
+    }
+    const hasErrored = missingTrackingIds.length || duplicateTrackingIds.length;
+    // If any error has occured, stop processing.
+    if (hasErrored) {
+      const err = new Error('Oops, looks like you have some json errors with trackingIds.');
+      err.number = 10011;
+      throw err;
+    }
+  }
+
 }
 
 const data = new Data();
-
-data.findById = data.findById.bind(data);
-data.findViewByModelId = data.findViewByModelId.bind(data);
-data.findByTrackingPosition = data.findByTrackingPosition.bind(data);
-
-Object.defineProperties(Adapt, {
-  data: {
-    get() {
-      logging.deprecated('Adapt.data, please use core/js/data directly');
-      return data;
-    }
-  },
-  findById: {
-    get() {
-      logging.deprecated('Adapt.findById, please use data.findById directly');
-      return data.findById;
-    }
-  },
-  findViewByModelId: {
-    get() {
-      logging.deprecated('Adapt.findViewByModelId, please use data.findViewByModelId directly');
-      return data.findViewByModelId;
-    }
-  },
-  findByTrackingPosition: {
-    get() {
-      logging.deprecated('Adapt.findByTrackingPosition, please use data.findByTrackingPosition directly');
-      return data.findByTrackingPosition;
-    }
-  }
-});
-
 export default data;

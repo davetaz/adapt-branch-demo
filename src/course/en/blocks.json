@@ -58,7 +58,6 @@
       "_isCompletionIndicatorEnabled": false
     },
     "_branching": {
-      "_isEnabled": true,
       "_containerId": "",
       "_correct": "6312274326d6180096801178",
       "_partlyCorrect": "6312274326d6180096801179",
@@ -142,7 +141,6 @@
       "_isCompletionIndicatorEnabled": false
     },
     "_branching": {
-      "_isEnabled": true,
       "_containerId": "",
       "_correct": "",
       "_partlyCorrect": "",
@@ -226,7 +224,6 @@
       "_isCompletionIndicatorEnabled": false
     },
     "_branching": {
-      "_isEnabled": true,
       "_containerId": "",
       "_correct": "",
       "_partlyCorrect": "",

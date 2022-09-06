@@ -168,7 +168,7 @@ export default class NotifyPopupView extends Backbone.View {
     $.inview();
     this.hasOpened = true;
     // Allows popup manager to control focus
-    a11y.popupOpened(this.$('.notify__popup'));
+    a11y.popupOpened(this.$el);
     a11y.scrollDisable('body');
     $('html').addClass('notify');
     // Set focus to first accessible element
@@ -177,7 +177,7 @@ export default class NotifyPopupView extends Backbone.View {
 
   async addSubView() {
     this.subView = this.model.get('_view');
-    if (this.model.get('_id')) {
+    if (this.model.get('_shouldRenderId') && this.model.get('_id')) {
       // Automatically render the specified id
       const model = data.findById(this.model.get('_id'));
       const View = components.getViewClass(model);
@@ -185,7 +185,7 @@ export default class NotifyPopupView extends Backbone.View {
     }
     if (!this.subView) return;
     this.subView.$el.on('resize', this.resetNotifySize);
-    this.$('.notify__content-inner').prepend(this.subView.$el);
+    this.$('.notify__content-inner').append(this.subView.$el);
     if (!(this.subView instanceof AdaptView) || this.subView.model.get('_isReady')) return;
     // Wait for the AdaptView subview to be ready
     return new Promise(resolve => {

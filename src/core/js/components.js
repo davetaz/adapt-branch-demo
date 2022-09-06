@@ -1,11 +1,15 @@
 import Backbone from 'backbone';
 import logging from 'core/js/logging';
-import Adapt from 'core/js/adapt';
 
 class Components extends Backbone.Controller {
 
   initialize() {
     this._register = {};
+    this.register = this.register.bind(this);
+    this.getViewName = this.getViewName.bind(this);
+    this.getViewClass = this.getViewClass.bind(this);
+    this.getModelName = this.getModelName.bind(this);
+    this.getModelClass = this.getModelClass.bind(this);
   }
 
   /**
@@ -99,7 +103,7 @@ class Components extends Backbone.Controller {
     const name = this.getViewName(nameModelViewOrData);
     const object = this._register[name];
     if (!object) {
-      logging.warnOnce(`A view for '${name}' isn't registered in your project`);
+      logging.error(`A view for '${name}' isn't registered in your project`);
       return;
     }
     const isBackboneView = (object.view?.prototype instanceof Backbone.View);
@@ -152,7 +156,7 @@ class Components extends Backbone.Controller {
     const name = this.getModelName(nameModelOrData);
     const object = this._register[name];
     if (!object) {
-      logging.warnOnce(`A model for '${name}' isn't registered in your project`);
+      logging.error(`A model for '${name}' isn't registered in your project`);
       return;
     }
     const isBackboneModel = (object.model?.prototype instanceof Backbone.Model);
@@ -165,57 +169,4 @@ class Components extends Backbone.Controller {
 }
 
 const components = new Components();
-components.register = components.register.bind(components);
-components.getViewName = components.getViewName.bind(components);
-components.getViewClass = components.getViewClass.bind(components);
-components.getModelName = components.getModelName.bind(components);
-components.getModelClass = components.getModelClass.bind(components);
-
-Object.defineProperties(Adapt, {
-  store: {
-    get() {
-      logging.deprecated('Adapt.store, please use core/js/components directly');
-      return components._register;
-    }
-  },
-  componentStore: {
-    get() {
-      logging.deprecated('Adapt.componentStore, please use core/js/components directly');
-      return components._register;
-    }
-  },
-  register: {
-    get() {
-      logging.deprecated('Adapt.register, please use components.register instead');
-      return components.register;
-    }
-  },
-  getViewName: {
-    get() {
-      logging.deprecated('Adapt.getViewName, please use components.getViewName instead');
-      return components.getViewName;
-    }
-
-  },
-  getViewClass: {
-    get() {
-      logging.deprecated('Adapt.getViewClass, please use components.getViewClass instead');
-      return components.getViewClass;
-    }
-
-  },
-  getModelName: {
-    get() {
-      logging.deprecated('Adapt.getModelName, please use components.getModelName instead');
-      return components.getModelName;
-    }
-  },
-  getModelClass: {
-    get() {
-      logging.deprecated('Adapt.getModelClass, please use components.getModelClass instead');
-      return components.getModelClass;
-    }
-  }
-});
-
 export default components;

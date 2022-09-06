@@ -1,3 +1,47 @@
+## [5.20.2] - 2022-07-18
+### Changed
+* Core branch updated to v6.12.0
+
+## [5.20.1] - 2022-07-06
+### Changed
+* Core branch updated to v6.11.0
+
+### fixed
+* Updated and added libraries (https://github.com/adaptlearning/adapt_framework/issues/3307)
+
+## [5.20.0] - 2022-06-21
+### Changed
+* Core branch updated to v6.10.0
+
+### Removed
+* IE11 support (https://github.com/adaptlearning/adapt_framework/issues/3309)
+
+### Added
+* Ability to specify "course" directory (https://github.com/adaptlearning/adapt_framework/issues/3305)
+
+## [5.19.6] - 2022-06-08
+### Changed
+* Core branch updated
+
+## [5.19.5] - 2022-05-30
+### Changed
+* Core branch updated
+* node modules updated (https://github.com/adaptlearning/adapt_framework/issues/3290)
+* Bump grunt from 1.5.2 to 1.5.3 (https://github.com/adaptlearning/adapt_framework/pull/3304)
+
+## [5.19.4] - 2022-05-23
+### Changed
+* Core branch updated
+* Added missing assessment configurations (https://github.com/adaptlearning/adapt_framework/issues/3287)
+
+## [5.19.3] - 2022-05-09
+### Changed
+* Core branch updated
+
+## [5.19.2] - 2022-04-26
+### Changed
+* Core branch updated
+
 ## [5.19.1] - 2022-04-06
 ### Changed
 * Core branch updated
